@@ -1,3 +1,5 @@
+
+
 export const ACCEL_SCALAR = 500   // up to 6.5g; resolution 0.002 m/s/s
 export const BATCH_PERIOD = 1
 export const valuesPerRecord = 4  // x, y, z, time

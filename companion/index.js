@@ -8,22 +8,49 @@ import { ACCEL_SCALAR, statusMsg, valuesPerRecord, headerLength } from '../commo
 let user = "";
 try {
   const userSetting = settingsStorage.getItem('user');
-  if (userSetting) { user = userSetting; } else {
+  if (userSetting) {
+    try {
+      const userObj = JSON.parse(userSetting);
+      if (userObj && userObj.name) {
+        user = userObj.name;  // When user is {"name":"jjw012754"}
+      } else {
+        user = userSetting;  // When user is "jjw012754"
+      }
+    } catch (e) {
+      user = userSetting;  // When user is "jjw012754"
+    }
+  } else {
     console.error("The 'user' setting is not correctly formatted.");
   }
-} catch (err) { console.error("Error parsing 'user' setting:", err);
+} catch (err) {
+  console.error("Error parsing 'user' setting:", err);
 }
 
 let dbURL = "";
 try {
   const dbURLSetting = settingsStorage.getItem('dbURL');
-  if (dbURLSetting) { dbURL = dbURLSetting; } else {
+  if (dbURLSetting) {
+    try {
+      const dbURLObj = JSON.parse(dbURLSetting);
+      if (dbURLObj && dbURLObj.name) {
+        dbURL = dbURLObj.name;  // When dbURL is {"name":"yourdburl.com"}
+      } else {
+        dbURL = dbURLSetting;  // When dbURL is "yourdburl.com"
+      }
+    } catch (e) {
+      dbURL = dbURLSetting;  // When dbURL is "yourdburl.com"
+    }
+  } else {
     console.error("The 'dbURL' setting is not correctly formatted.");
   }
-} catch (err) { console.error("Error parsing 'dbURL' setting:", err);
+} catch (err) {
+  console.error("Error parsing 'dbURL' setting:", err);
 }
 
-const httpURLstatus = `${dbURL}/${user}/status.json`
+const httpURLstatus = `${dbURL}/${user}/status.json`;
+
+
+
 
 function getURL() {
   let today = new Date();
@@ -119,7 +146,7 @@ async function receiveStatusFromWatch(file) {
 
 function sendToServer(data, fileName, httpURL, asJSON) {
   // fileName can be null if sending a status message.
-  console.log(`sendToServer() fileName=${fileName} asJSON=${asJSON}`)
+  console.log(`sendToServer() fileName=${fileName} asJSON=${asJSON} httpURL=${httpURL}`)
   const headers = {}
   if (fileName) headers.FileName = fileName
   if (asJSON) headers["Content-Type"] = "application/json"
